@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html>
+<head>
+                <style>.lw { font-size: 60px; font-family: Arial, Helvetica, sans-serif; }</style>
+            </head>
+            <body>
+                <script>(function installLiveweaveConsoleBridge() {
+        if (window.__liveweaveConsoleBridge) return;
+        window.__liveweaveConsoleBridge = true;
+
+        function format(value) {
+            if (typeof value === 'string') return value;
+            if (typeof value === 'undefined') return 'undefined';
+            if (typeof value === 'function') return value.toString();
+            if (value instanceof Error) return value.name + ': ' + value.message;
+            if (value instanceof Element) return value.outerHTML;
+            try {
+                var seen = [];
+                return JSON.stringify(value, function(key, item) {
+                    if (typeof item === 'object' && item !== null) {
+                        if (seen.indexOf(item) !== -1) return '[Circular]';
+                        seen.push(item);
+                    }
+                    return item;
+                }, 2);
+            } catch (err) {
+                return String(value);
+            }
+        }
+
+        function send(type, values, id) {
+            parent.postMessage({
+                source: 'liveweave-preview-console',
+                type: type,
+                id: id || '',
+                values: (values || []).map(format)
+            }, '*');
+        }
+
+        ['log', 'info', 'warn', 'error', 'debug'].forEach(function(level) {
+            var original = console[level];
+            console[level] = function() {
+                var args = Array.prototype.slice.call(arguments);
+                send(level === 'log' || level === 'debug' ? 'log' : level, args);
+                if (original) original.apply(console, args);
+            };
+        });
+
+        window.addEventListener('error', function(event) {
+            send('error', [event.message + (event.lineno ? ' (line ' + event.lineno + ')' : '')]);
+        });
+        window.addEventListener('unhandledrejection', function(event) {
+            send('error', ['Unhandled promise rejection:', event.reason]);
+        });
+        window.addEventListener('message', function(event) {
+            var message = event.data || {};
+            if (event.source !== parent || message.source !== 'liveweave-parent-console' || message.type !== 'evaluate') return;
+            try {
+                var result = (0, eval)(message.code);
+                Promise.resolve(result).then(function(value) {
+                    send('result', [value], message.id);
+                }, function(error) {
+                    send('error', [error], message.id);
+                });
+            } catch (error) {
+                send('error', [error], message.id);
+            }
+        });
+        send('ready', []);
+    })();</script>
+                <script>(function installPreviewLinkGuard() {
+        var noticeTimer;
+
+        function showNotice(message) {
+            var notice = document.getElementById('lw-preview-link-notice');
+            if (!notice) {
+                notice = document.createElement('div');
+                notice.id = 'lw-preview-link-notice';
+                notice.setAttribute('role', 'status');
+                notice.style.cssText = 'position:fixed;left:12px;bottom:12px;z-index:2147483647;max-width:calc(100% - 24px);padding:10px 14px;border-radius:9px;background:#17212d;color:#fff;font:13px/1.4 system-ui,sans-serif;box-shadow:0 8px 24px rgba(0,0,0,.25);pointer-events:none;';
+                document.body.appendChild(notice);
+            }
+            notice.textContent = message;
+            notice.hidden = false;
+            clearTimeout(noticeTimer);
+            noticeTimer = setTimeout(function() { notice.hidden = true; }, 3500);
+        }
+
+        document.addEventListener('click', function(event) {
+            var link = event.target.closest && event.target.closest('a[href]');
+            if (!link || event.defaultPrevented) return;
+
+            var href = (link.getAttribute('href') || '').trim();
+            if (href.charAt(0) === '#') {
+                event.preventDefault();
+                var fragment = href.slice(1);
+                if (!fragment) {
+                    window.scrollTo(0, 0);
+                    return;
+                }
+                try { fragment = decodeURIComponent(fragment); } catch (error) {}
+                var target = document.getElementById(fragment) || document.getElementsByName(fragment)[0];
+                if (target) target.scrollIntoView();
+                return;
+            }
+
+            if (/^(https?:)?\/\//i.test(href)) {
+                event.preventDefault();
+                window.open(href, '_blank', 'noopener,noreferrer');
+                return;
+            }
+
+            if (/^(mailto:|tel:)/i.test(href)) return;
+
+            event.preventDefault();
+            showNotice('This page cannot be opened in the preview.');
+        }, true);
+    })();</script>
+                
+
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>For Danish Midha ❤️</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&amp;family=Nunito:wght@400;600;700;800&amp;family=Sacramento&amp;display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #fde2e4 0%, #ffcad4 100%);
+      --card-bg: rgba(255, 255, 255, 0.95);
+      --primary-pink: #ff4d6d;
+      --secondary-pink: #ff758f;
+      --soft-pink: #ffb3c1;
+      --accent-purple: #c77dff;
+      --text-main: #2b2d42;
+      --text-muted: #595959;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    .music-control {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 8px 16px;
+      border-radius: 30px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: 2px solid var(--soft-pink);
+    }
+
+    .bg-heart {
+      position: absolute;
+      color: rgba(255, 77, 109, 0.2);
+      font-size: 24px;
+      animation: float 8s infinite ease-in-out;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-30px) rotate(20deg); }
+    }
+
+    .app-container {
+      width: 90%;
+      max-width: 480px;
+      min-height: 580px;
+      background: var(--card-bg);
+      border-radius: 28px;
+      box-shadow: 0 15px 35px rgba(255, 77, 109, 0.2);
+      padding: 28px 20px;
+      position: relative;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .lock-screen {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      flex-grow: 1;
+    }
+
+    .lock-screen h1 {
+      font-family: 'Fredoka One', cursive;
+      color: var(--primary-pink);
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+
+    .passcode-input {
+      width: 80%;
+      padding: 14px;
+      border: 2px solid var(--soft-pink);
+      border-radius: 16px;
+      text-align: center;
+      font-size: 1.3rem;
+      letter-spacing: 6px;
+      margin: 20px 0 10px;
+      outline: none;
+    }
+
+    .btn-main {
+      background: linear-gradient(135deg, var(--primary-pink), var(--secondary-pink));
+      color: white;
+      border: none;
+      padding: 12px 28px;
+      border-radius: 20px;
+      font-size: 1rem;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 5px 15px rgba(255, 77, 109, 0.3);
+      transition: all 0.2s;
+    }
+
+    .btn-main:hover { transform: translateY(-2px); }
+
+    .error-msg {
+      color: #ff3333;
+      font-size: 0.85rem;
+      margin-top: 8px;
+      display: none;
+    }
+
+    .slide {
+      display: none;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100%;
+      flex-grow: 1;
+      animation: fadeIn 0.4s ease-in-out;
+    }
+
+    .slide.active { display: flex; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8deg); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .slide-header {
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .slide-header h2 {
+      font-family: 'Fredoka One', cursive;
+      color: var(--primary-pink);
+      font-size: 1.5rem;
+    }
+
+    .slide-body {
+      flex-grow: 1;
+      overflow-y: auto;
+      max-height: 420px;
+      padding-right: 4px;
+    }
+
+    .slide-body::-webkit-scrollbar { width: 4px; }
+    .slide-body::-webkit-scrollbar-thumb { background: var(--soft-pink); border-radius: 4px; }
+
+    .cute-box {
+      background: #fff0f3;
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 12px;
+      border-left: 5px solid var(--primary-pink);
+    }
+
+    .cute-box h3 {
+      font-size: 1.05rem;
+      color: var(--primary-pink);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .cute-box p {
+      font-size: 0.92rem;
+      line-height: 1.5;
+      color: var(--text-main);
+    }
+
+    .letter-card {
+      background: #fff8f9;
+      border: 2px dashed var(--soft-pink);
+      border-radius: 20px;
+      padding: 20px;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: #444;
+      text-align: left;
+    }
+
+    .song-card {
+      background: linear-gradient(135deg, #fff0f5, #f3e8ff);
+      border-radius: 20px;
+      padding: 18px;
+      border: 2px solid #e0aaff;
+      text-align: center;
+      margin-bottom: 15px;
+    }
+
+    .song-title {
+      font-family: 'Fredoka One', cursive;
+      color: var(--accent-purple);
+      font-size: 1.3rem;
+      margin-top: 6px;
+    }
+
+    .song-artist {
+      font-size: 0.85rem;
+      color: #7b2cbf;
+      margin-bottom: 12px;
+      font-weight: 700;
+    }
+
+    .lyrics-box {
+      font-family: 'Sacramento', cursive;
+      font-size: 1.5rem;
+      color: #3c096c;
+      line-height: 1.4;
+      background: rgba(255,255,255,0.75);
+      padding: 12px;
+      border-radius: 12px;
+      margin-bottom: 8px;
+    }
+
+    .lyrics-translation {
+      font-size: 0.85rem;
+      color: #5a189a;
+      font-style: italic;
+    }
+
+    .annoy-item {
+      background: #fff;
+      border: 1.5px solid var(--soft-pink);
+      border-radius: 14px;
+      padding: 10px 14px;
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .promise-item {
+      background: #fff8fa;
+      border: 1.5px solid var(--soft-pink);
+      border-radius: 16px;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      line-height: 1.4;
+    }
+
+    .promise-num {
+      background: var(--primary-pink);
+      color: white;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 800;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .quiz-options button {
+      width: 100%;
+      background: white;
+      border: 2px solid var(--soft-pink);
+      color: var(--text-main);
+      padding: 12px;
+      border-radius: 14px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .quiz-options button:hover {
+      background: var(--soft-pink);
+      color: white;
+    }
+
+    .envelope-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .envelope-card {
+      background: white;
+      border: 2px solid var(--soft-pink);
+      border-radius: 16px;
+      padding: 14px 10px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .envelope-card:hover { transform: scale(1.03); }
+
+    .nav-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 16px;
+      padding-top: 12px;
+      border-top: 1.5px solid #f0f0f0;
+    }
+
+    .btn-nav {
+      background: #f0f0f0;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+
+    .progress-bar {
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: var(--secondary-pink);
+    }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.4);
+      display: flex; justify-content: center; align-items: center;
+      opacity: 0; pointer-events: none; transition: opacity 0.3s;
+      z-index: 2000;
+    }
+
+    .modal-overlay.active { opacity: 1; pointer-events: auto; }
+
+    .modal-card {
+      background: white; width: 85%; max-width: 380px;
+      padding: 24px; border-radius: 24px; text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+  </style>
+
+
+
+  <audio id="bg-music" loop="" src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=soft-piano-10878.mp3"></audio>
+
+  <div class="music-control" onclick="toggleMusic()">
+    <span id="music-icon">🎵</span> <span id="music-text">Play Soft Music</span>
+  </div>
+
+  <div class="bg-heart" style="top: 10%; left: 10%;">❤️</div>
+  <div class="bg-heart" style="top: 25%; right: 12%;">✨</div>
+  <div class="bg-heart" style="bottom: 15%; left: 20%;">💖</div>
+  <div class="bg-heart" style="bottom: 30%; right: 18%;">🌸</div>
+
+  <div class="app-container">
+
+    <div id="lock-screen" class="lock-screen">
+      <h1>Hey Danish Midha ❤️</h1>
+      <p style="color: #666; font-size: 0.95rem;">I made something super cute for you...</p>
+      <input type="password" id="passcode" class="passcode-input" placeholder="••••" maxlength="4">
+      <button class="btn-main" onclick="checkPasscode()">Unlock My Gift 💌</button>
+      <p class="error-msg" id="pass-error">Oops! Enter our code, baby! 🙈</p>
+    </div>
+
+    <div id="main-content" style="display: none; height: 100%; flex-direction: column; justify-content: space-between;">
+
+      <!-- Slide 1: Welcome & Morni Trip -->
+      <div class="slide active" id="slide-1">
+        <div class="slide-header">
+          <h2>Happy Boyfriend's Day! 💖</h2>
+          <p style="font-size: 0.85rem; color: #777;">Our Sweet Little Timeline</p>
+        </div>
+        <div class="slide-body">
+          <div class="cute-box">
+            <h3>🏔️ The Morni Trip</h3>
+            <p>Our spontaneous morning drive to Morni where we spent the day, laughed, and fell for each other before coming right back!</p>
+          </div>
+          <div class="cute-box">
+            <h3>🎓 University Days</h3>
+            <p>Classrooms, shared look-backs, and endless laughs across campus. Having you around made everything feel lighter.</p>
+          </div>
+          <div class="cute-box">
+            <h3>📍 All Our Plans in Mohali</h3>
+            <p>Every drive, cafe stop, and dream we planned in Mohali holds the softest place in my heart!</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 2: Dedicated Punjabi Track -->
+      <div class="slide" id="slide-2">
+        <div class="slide-header">
+          <h2>Dedicated To You 🎵</h2>
+          <p style="font-size: 0.85rem; color: #777;">A Punjabi Vibe Just For Danish</p>
+        </div>
+        <div class="slide-body">
+          <div class="song-card">
+            <div style="font-size: 2.2rem;">🎤❤️</div>
+            <div class="song-title">"Winning Speech"</div>
+            <div class="song-artist">by Karan Aujla</div>
+            <div class="lyrics-box">
+              "Kudi Jatt di fragrance door ton pachane!"
+            </div>
+            <div class="lyrics-translation">
+              ("She recognizes the fragrance from afar!")
+            </div>
+          </div>
+          <div class="cute-box" style="border-left-color: #c77dff; background: #fcf4ff;">
+            <h3>🥹 Why This Track Reminds Me Of You</h3>
+            <p>In <i>Winning Speech</i>, Karan Aujla sings about confidence, pride, and an unbreakable bond that stands out above everything else. No matter where we are or how many miles lie between us, you will always be my number one!</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 3: Things That Annoy Me -->
+      <div class="slide" id="slide-3">
+        <div class="slide-header">
+          <h2>How You Annoy Me 😂</h2>
+          <p style="font-size: 0.85rem; color: #777;">Things I "Dislike" (Nonsense!)</p>
+        </div>
+        <div class="slide-body">
+          <div class="annoy-item"><span>😒</span> Taking forever to reply when you're busy!</div>
+          <div class="annoy-item"><span>🙄</span> Winning arguments even when you know I'm dramatic.</div>
+          <div class="annoy-item"><span>😤</span> Being so ridiculously stubborn sometimes.</div>
+          <div class="annoy-item"><span>😂</span> Making stupid jokes when I'm trying to be serious.</div>
+          <div class="annoy-item"><span>🙈</span> Managing to get on my nerves with that innocent smile.</div>
+          
+          <div style="text-align: center; margin-top: 16px; font-weight: 800; color: var(--primary-pink); font-size: 1.05rem;">
+            Unfortunately for you... I love you anyway! 💖
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 4: His 7 Promises To Me -->
+      <div class="slide" id="slide-4">
+        <div class="slide-header">
+          <h2>Danish's 7 Promises To Me 🤙🏻❤️</h2>
+          <p style="font-size: 0.85rem; color: #777;">Promises You Made &amp; Must Keep!</p>
+        </div>
+        <div class="slide-body">
+          <div class="promise-item">
+            <div class="promise-num">1</div>
+            <div><strong>You promised never to leave me.</strong> No matter how tough things get or how many miles lie between us, you will stay by my side forever.</div>
+          </div>
+          <div class="promise-item">
+            <div class="promise-num">2</div>
+            <div><strong>You promised to always love me.</strong> Even when I get dramatic, moody, or annoying!</div>
+          </div>
+          <div class="promise-item">
+            <div class="promise-num">3</div>
+            <div><strong>You promised to answer my calls quickly.</strong> Or at least text me as soon as you can so I don't worry!</div>
+          </div>
+          <div class="promise-item">
+            <div class="promise-num">4</div>
+            <div><strong>You promised to put up with my mood swings.</strong> And bring me good food whenever I'm upset! 😂</div>
+          </div>
+          <div class="promise-item">
+            <div class="promise-num">5</div>
+            <div><strong>You promised to listen to me attentively.</strong> Even when I am blabbering about random nonsense for hours.</div>
+          </div>
+          <div class="promise-item">
+            <div class="promise-num">6</div>
+            <div><strong>You promised to make time for us.</strong> No matter how busy life gets, we always come first.</div>
+          </div>
+          <div class="promise-item">
+            <div class="promise-num">7</div>
+            <div><strong>You promised to build our dream future together.</strong> So we never have to say goodbye through a screen again!</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 5: Letter -->
+      <div class="slide" id="slide-5">
+        <div class="slide-header">
+          <h2>For My Favorite Person ❤️</h2>
+        </div>
+        <div class="slide-body">
+          <div class="letter-card">
+            <p>Happy Boyfriend’s Day to my favorite person ❤️️🥹</p><br>
+            <p>I don’t think I say it enough, but I’m so grateful to have you in my life. You’ve become such an important part of my everyday life, and even with all the distance between us, you somehow still make me feel close to you. 🫶🏻</p><br>
+            <p>Thank you for listening to me, putting up with my moods 😂, supporting me, making me smile, and simply being there for me. I love all the little things about us — our conversations, our silly moments, our plans, and even the arguments that somehow bring us closer. ❤️</p><br>
+            <p>I hope one day we won’t have to celebrate these days through a phone screen. I want the normal things with you — going out together, annoying you in person, eating together, fighting over stupid things, laughing until our stomachs hurt, and coming home to each other. 🥹❤️</p><br>
+            <p>Until then, just know that there’s a girl miles away who loves you, misses you, believes in you, and is excited for everything we’re going to build together. 🧿❤️</p><br>
+            <p>Happy Boyfriend’s Day, my love.<br><strong>I love you more than you know. ❤️🫂</strong></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 6: Quiz -->
+      <div class="slide" id="slide-6">
+        <div class="slide-header">
+          <h2>Couple Quiz 🎮</h2>
+          <p style="font-size: 0.85rem; color: #777;">Click your answer, Danish!</p>
+        </div>
+        <div class="slide-body">
+          <div id="quiz-q1">
+            <div class="cute-box"><h3>Q1: Who loves the other more?</h3></div>
+            <div class="quiz-options">
+              <button onclick="quizAnswer('Wrong answer! 😂 It\'s ME.')">You</button>
+              <button onclick="quizAnswer('Wrong answer! 😂 It\'s ME.')">Me</button>
+              <button onclick="quizAnswer('Correct! 😌 Obviously ME.')">Obviously Me 😌</button>
+            </div>
+          </div>
+          <div id="quiz-q2" style="margin-top: 15px;">
+            <div class="cute-box"><h3>Q2: Who is more dramatic?</h3></div>
+            <div class="quiz-options">
+              <button onclick="quizAnswer('Don\'t lie just because I\'m watching! 😂')">Me</button>
+              <button onclick="quizAnswer('Don\'t lie just because I\'m watching! 😂')">You</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 7: Always With Me -->
+      <div class="slide" id="slide-7">
+        <div class="slide-header">
+          <h2>Always With Me 🧿</h2>
+        </div>
+        <div class="slide-body">
+          <div class="cute-box" style="border-left-color: var(--accent-purple); background: #fdf4ff;">
+            <h3>🌍 Distance Means Nothing</h3>
+            <p>No matter how many miles separate us, wherever you are, you will always be right here in my heart.</p>
+          </div>
+          <div class="cute-box">
+            <h3>📱 Countdown to Forever</h3>
+            <p>One day we will look back at all these video calls, countdowns, and "I miss you" texts and laugh because we finally made it!</p>
+          </div>
+          <div style="text-align: center; font-size: 2.5rem; margin-top: 15px;">
+            👩‍❤️‍👨
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 8: Open When -->
+      <div class="slide" id="slide-8">
+        <div class="slide-header">
+          <h2>Open When... 💌</h2>
+          <p style="font-size: 0.85rem; color: #777;">Tap an envelope when you need it</p>
+        </div>
+        <div class="slide-body">
+          <div class="envelope-grid">
+            <div class="envelope-card" onclick="openNote('When You Miss Me 🥺', 'Close your eyes, take a deep breath, and remember I am thinking about you right now too. Send me a quick ❤️ text!')">
+              <div style="font-size: 1.5rem;">🥺</div>
+              <div style="font-size: 0.8rem; font-weight: 700; margin-top: 4px;">You Miss Me</div>
+            </div>
+            <div class="envelope-card" onclick="openNote('When You Are Sad 🫂', 'I wish I could hug you right now. You are doing amazing, and I am always in your corner, baby.')">
+              <div style="font-size: 1.5rem;">🫂</div>
+              <div style="font-size: 0.8rem; font-weight: 700; margin-top: 4px;">You\'re Sad</div>
+            </div>
+            <div class="envelope-card" onclick="openNote('When You Are Mad At Me 😂', 'I am sorry! I probably didn\'t mean to annoy you... but please forgive me with a smile!')">
+              <div style="font-size: 1.5rem;">😂</div>
+              <div style="font-size: 0.8rem; font-weight: 700; margin-top: 4px;">Mad At Me</div>
+            </div>
+            <div class="envelope-card" onclick="openNote('Need A Smile ❤️', 'Remember that you have the most handsome smile, and a girl miles away is completely crazy about you!')">
+              <div style="font-size: 1.5rem;">✨</div>
+              <div style="font-size: 0.8rem; font-weight: 700; margin-top: 4px;">Need A Smile</div>
+            </div>
+          </div>
+
+          <div style="margin-top: 16px; text-align: center;">
+            <button class="btn-main" style="width: 100%; font-size: 0.85rem;" onclick="openSecretModal()">🔐 Enter Secret Date Code</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 9: Final -->
+      <div class="slide" id="slide-9">
+        <div class="slide-header">
+          <h2>This Isn't Just A Webpage... ❤️</h2>
+        </div>
+        <div class="slide-body" style="text-align: center;">
+          <div style="font-size: 3.5rem; margin: 15px 0;">🧸✨</div>
+          <p style="font-size: 1.05rem; line-height: 1.6; color: var(--text-main); font-weight: 700;">
+            This is a little piece of my heart that you can carry in your pocket wherever you go. 
+          </p>
+          <br>
+          <p style="font-size: 0.95rem; color: #666;">
+            Whenever you miss me, open this link, listen to the music, and know that I love you endlessly!
+          </p>
+          <br>
+          <h3 style="color: var(--primary-pink); font-family: 'Fredoka One', cursive; font-size: 1.4rem;">
+            Happy Boyfriend's Day, Danish! 💖
+          </h3>
+        </div>
+      </div>
+
+      <!-- Navigation -->
+      <div class="nav-footer">
+        <button class="btn-nav" id="btn-prev" onclick="changeSlide(-1)" style="visibility: hidden;">← Back</button>
+        <span class="progress-bar" id="progress-text">Slide 1 / 9</span>
+        <button class="btn-nav" id="btn-next" onclick="changeSlide(1)" style="background: var(--soft-pink); color: white;">Next →</button>
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="modal-overlay" id="popup-modal">
+    <div class="modal-card">
+      <h3 id="modal-title" style="color: var(--primary-pink); font-family: 'Fredoka One', cursive; margin-bottom: 10px;"></h3>
+      <p id="modal-text" style="font-size: 0.95rem; line-height: 1.5; color: #555;"></p>
+      <button class="btn-main" style="margin-top: 16px;" onclick="closeModal()">Close Hug 🤗</button>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="secret-modal">
+    <div class="modal-card">
+      <h3 style="color: var(--accent-purple); font-family: 'Fredoka One', cursive; margin-bottom: 8px;">Enter Our Secret Date 🗝️</h3>
+      <input type="text" id="secret-input" class="passcode-input" placeholder="DDMM" style="width: 70%; margin: 10px 0;">
+      <button class="btn-main" onclick="checkSecretDate()">Unlock Message</button>
+      <button class="btn-nav" style="margin-top: 8px; width: 100%;" onclick="closeSecretModal()">Cancel</button>
+    </div>
+  </div>
+
+  <script>
+    let currentSlide = 1;
+    const totalSlides = 9;
+    const audio = document.getElementById('bg-music');
+
+    function checkPasscode() {
+      const val = document.getElementById('passcode').value;
+      if (val === '2024') {
+        document.getElementById('lock-screen').style.display = 'none';
+        document.getElementById('main-content').style.display = 'flex';
+        audio.play().catch(() => {});
+      } else {
+        document.getElementById('pass-error').style.display = 'block';
+      }
+    }
+
+    function changeSlide(direction) {
+      document.getElementById(`slide-${currentSlide}`).classList.remove('active');
+      currentSlide += direction;
+      if (currentSlide < 1) currentSlide = 1;
+      if (currentSlide > totalSlides) currentSlide = totalSlides;
+
+      document.getElementById(`slide-${currentSlide}`).classList.add('active');
+      document.getElementById('progress-text').innerText = `Slide ${currentSlide} / ${totalSlides}`;
+
+      document.getElementById('btn-prev').style.visibility = currentSlide === 1 ? 'hidden' : 'visible';
+      document.getElementById('btn-next').style.visibility = currentSlide === totalSlides ? 'hidden' : 'visible';
+    }
+
+    function toggleMusic() {
+      if (audio.paused) {
+        audio.play();
+        document.getElementById('music-text').innerText = 'Pause Music';
+      } else {
+        audio.pause();
+        document.getElementById('music-text').innerText = 'Play Soft Music';
+      }
+    }
+
+    function quizAnswer(msg) {
+      openNote('Quiz Says... 🙈', msg);
+    }
+
+    function openNote(title, text) {
+      document.getElementById('modal-title').innerText = title;
+      document.getElementById('modal-text').innerText = text;
+      document.getElementById('popup-modal').classList.add('active');
+    }
+
+    function closeModal() {
+      document.getElementById('popup-modal').classList.remove('active');
+    }
+
+    function openSecretModal() {
+      document.getElementById('secret-modal').classList.add('active');
+    }
+
+    function closeSecretModal() {
+      document.getElementById('secret-modal').classList.remove('active');
+    }
+
+    function checkSecretDate() {
+      const code = document.getElementById('secret-input').value;
+      if (code.length >= 2) {
+        closeSecretModal();
+        openNote('Secret Unlocked! 💖', 'You remembered! No matter what date it is, every single day with you is my absolute favorite. I love you!');
+      }
+    }
+
+    document.getElementById('btn-prev').style.visibility = 'hidden';
+  </script>
+
+
+                <script>// Write JavaScript here</script>
+            
+        
+    </body>
